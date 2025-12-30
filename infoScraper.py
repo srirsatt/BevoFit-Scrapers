@@ -49,19 +49,30 @@ for facility in facilities.data:
     div_main = soup.find("div", role="main")
     div_info = div_main.find("div", class_="nine columns")
     addr_h5 = div_info.find("h5", string=lambda s: s and "Facility Address" in s)
+    activities_h2 = div_info.find("h2", string=lambda s: s and "Activities at this Facility" in s)
     addr_para = addr_h5.find_next("p")
+    activities_list = activities_h2.find_next("ul")
 
-    lines = []
+    addr_lines = []
     for node in addr_para.contents:
         if isinstance(node, Tag) and node.name =='a':
             break # stops at a tag
         if isinstance(node, NavigableString):
             text = node.strip()
             if text:
-                lines.append(text)
+                addr_lines.append(text)
 
-    address = ", ".join(lines).replace("\xa0", " ")
+    activities_lines = []
+    for li in activities_list.find_all("li", recursive=False):
+        text = li.get_text(strip=True)
+        activities_lines.append(text)
+        #print(text)
+
+    address = ", ".join(addr_lines).replace("\xa0", " ")
     print(address)
+    print(activities_lines)
+
+
 
     # add back to supabase
     response = (
