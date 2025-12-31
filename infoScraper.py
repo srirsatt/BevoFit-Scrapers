@@ -50,8 +50,10 @@ for facility in facilities.data:
     div_info = div_main.find("div", class_="nine columns")
     addr_h5 = div_info.find("h5", string=lambda s: s and "Facility Address" in s)
     activities_h2 = div_info.find("h2", string=lambda s: s and "Activities at this Facility" in s)
+    features_h2 = div_info.find("h2", string=lambda s: s and "Features" in s)
     addr_para = addr_h5.find_next("p")
     activities_list = activities_h2.find_next("ul")
+    features_list = features_h2.find_next("ul")
 
     addr_lines = []
     for node in addr_para.contents:
@@ -67,10 +69,17 @@ for facility in facilities.data:
         text = li.get_text(strip=True)
         activities_lines.append(text)
         #print(text)
+    
+    features_lines = []
+    for li in features_list.find_all("li", recursive=False):
+        text = li.get_text(strip=True)
+        features_lines.append(text)
+
 
     address = ", ".join(addr_lines).replace("\xa0", " ")
     print(address)
     print(activities_lines)
+    print(features_lines)
 
 
 
@@ -81,6 +90,22 @@ for facility in facilities.data:
         .eq("id", facility_id)
         .execute()
     )
+    '''
+    for activity in activities_lines:
+        response2 = (
+            supabase.table("facility_activities")
+            .insert({"facility_id": facility_id, "activity": activity})
+            .execute()
+        )
+    '''
+    
+    for feature in features_lines:
+        response3 = (
+            supabase.table("facility_features")
+            .insert({"facility_id": facility_id, "feature": feature})
+            .execute()
+        )
+    
 
 
 
