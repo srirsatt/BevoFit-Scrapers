@@ -49,6 +49,8 @@ for facility in facilities.data:
     div_main = soup.find("div", role="main")
     div_info = div_main.find("div", class_="nine columns")
     addr_h5 = div_info.find("h5", string=lambda s: s and "Facility Address" in s)
+    gen_info_h2 = div_info.find("h2", string=lambda s: s and "General Information" in s)
+    gen_info_p = gen_info_h2.find_next("p")
     activities_h2 = div_info.find("h2", string=lambda s: s and "Activities at this Facility" in s)
     features_h2 = div_info.find("h2", string=lambda s: s and "Features" in s)
     addr_para = addr_h5.find_next("p")
@@ -75,18 +77,24 @@ for facility in facilities.data:
         text = li.get_text(strip=True)
         features_lines.append(text)
 
+    gen_info = gen_info_p.get_text(" ", strip=True)
+
 
     address = ", ".join(addr_lines).replace("\xa0", " ")
+    address = address.replace(".", "")
+    gen_info = gen_info.replace(" .", ".")
     print(address)
     print(activities_lines)
     print(features_lines)
+    print(gen_info)
 
 
 
     # add back to supabase
+    
     response = (
         supabase.table("facilities")
-        .update({"addr": address})
+        .update({"addr": address, "general_info": gen_info})
         .eq("id", facility_id)
         .execute()
     )
@@ -98,14 +106,17 @@ for facility in facilities.data:
             .execute()
         )
     '''
-    
+    '''
     for feature in features_lines:
         response3 = (
             supabase.table("facility_features")
             .insert({"facility_id": facility_id, "feature": feature})
             .execute()
         )
-    
+
+    '''
+
+
 
 
 
