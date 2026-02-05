@@ -88,10 +88,6 @@ python hoursScraper.py
 
 **hoursScraper.py** has been implemented as an EventBridge Cron Job in AWS Lambda, running every day at 5:00 AM CST.
 
-## AWS Lambda
-
-**hoursScraper.py** has been implemented as an EventBridge Cron Job in AWS Lambda, running every day at 5:00 AM CST.
-
 **Deployment:**
 - Runtime: Python 3.x
 - Handler: hoursScraper.lambda_handler (if using a handler function)
