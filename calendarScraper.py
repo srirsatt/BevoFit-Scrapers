@@ -18,7 +18,7 @@ supabase_key: str = os.environ.get("SUPABASE_SECRET_KEY")
 
 supabase: Client = create_client(supabase_url, supabase_key)
 
-link = "https://www.utrecsports.org/fitness-and-wellness/texercise-class-schedule#s365"
+link = "https://www.utrecsports.org/fitness-and-wellness/texercise-class-schedule#s520"
 html = requests.get(link).text
 
 soup = BeautifulSoup(html, "lxml")
@@ -72,7 +72,7 @@ div_twelveouter = div_row.find("div", class_="twelve columns")
 
 div_twelveinner = div_twelveouter.find("div", class_="twelve columns")
 
-table = div_twelveinner.find_all("table", summary="Texercise Hours")[1]
+table = div_twelveinner.find("table", summary="Texercise Hours")
 
 # table is table of all events for spring
 
@@ -83,7 +83,7 @@ for tr in table.find_all("tr"):
     if tr.get("class") == ['defaultShowing']:
         # insert day into supabase
         day = tr.find("td").get_text(strip = True)
-        day = day.replace("s", "")
+        day = day.removesuffix("s")
         #print(day)
 
         for next_tr in tr.find_next_siblings("tr"):
@@ -102,7 +102,7 @@ for tr in table.find_all("tr"):
                 # supabase add
                 response = (
                     supabase.table("classes")
-                    .insert({
+                    .upsert({
                         "day": day,
                         "time": time,
                         "name": class_name,
